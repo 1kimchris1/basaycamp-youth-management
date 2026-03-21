@@ -1,0 +1,13 @@
+services:
+  - type: web
+    name: basaycamp-youth-management
+    env: python
+    buildCommand: ./build.sh
+    startCommand: gunicorn basaycamp_project.wsgi:application --bind 0.0.0.0:$PORT
+    envVars:
+      - key: DEBUG
+        value: False
+      - key: SECRET_KEY
+        generateValue: true
+      - key: ALLOWED_HOSTS
+        sync: false

@@ -1,0 +1,129 @@
+{% extends 'base.html' %}
+
+{% block title %}Add Church - CRCCIMI YOUTH CAMP{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="row">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h2>
+                    <i class="fas fa-church"></i> Add New Church
+                </h2>
+                <a href="{% url 'churches' %}" class="btn btn-secondary">
+                    <i class="fas fa-arrow-left"></i> Back to Churches
+                </a>
+            </div>
+        </div>
+    </div>
+    
+    <div class="row">
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">Church Information</h5>
+                </div>
+                <div class="card-body">
+                    <form method="post">
+                        {% csrf_token %}
+                        
+                        <div class="row">
+                            <div class="col-md-12">
+                                <div class="form-group mb-3">
+                                    <label for="{{ form.name.id_for_label }}" class="form-label">
+                                        <i class="fas fa-church"></i> {{ form.name.label }}
+                                    </label>
+                                    {{ form.name }}
+                                    {% if form.name.errors %}
+                                        <div class="text-danger small mt-1">
+                                            {{ form.name.errors }}
+                                        </div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="row">
+                            <div class="col-md-12">
+                                <div class="form-group mb-3">
+                                    <label for="{{ form.host_pastor.id_for_label }}" class="form-label">
+                                        <i class="fas fa-user"></i> {{ form.host_pastor.label }}
+                                    </label>
+                                    {{ form.host_pastor }}
+                                    {% if form.host_pastor.errors %}
+                                        <div class="text-danger small mt-1">
+                                            {{ form.host_pastor.errors }}
+                                        </div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="alert alert-info">
+                            <i class="fas fa-info-circle"></i>
+                            <strong>Adding a new church:</strong>
+                            <ul class="mb-0 mt-2">
+                                <li>Enter the complete name of the church</li>
+                                <li>Provide the name of the host pastor</li>
+                                <li>Both fields are required and must be at least 2 characters</li>
+                            </ul>
+                        </div>
+                        
+                        {% if form.non_field_errors %}
+                            <div class="alert alert-danger">
+                                {% for error in form.non_field_errors %}
+                                    {{ error }}
+                                {% endfor %}
+                            </div>
+                        {% endif %}
+                        
+                        <div class="d-flex justify-content-between">
+                            <a href="{% url 'churches' %}" class="btn btn-secondary">
+                                <i class="fas fa-times"></i> Cancel
+                            </a>
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-save"></i> Add Church
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-4">
+            <div class="card bg-light">
+                <div class="card-header">
+                    <h6 class="mb-0">
+                        <i class="fas fa-info-circle"></i> Church Information
+                    </h6>
+                </div>
+                <div class="card-body">
+                    <h6>Field Requirements:</h6>
+                    <ul class="list-unstyled">
+                        <li><i class="fas fa-church text-primary"></i> <strong>Church Name:</strong> Official name of the church</li>
+                        <li><i class="fas fa-user text-success"></i> <strong>Host Pastor:</strong> Leading pastor name</li>
+                    </ul>
+                    
+                    <hr>
+                    
+                    <h6>Validation Rules:</h6>
+                    <ul class="list-unstyled">
+                        <li><i class="fas fa-check text-info"></i> Minimum 2 characters</li>
+                        <li><i class="fas fa-check text-info"></i> No special character restrictions</li>
+                        <li><i class="fas fa-check text-info"></i> Whitespace trimmed automatically</li>
+                    </ul>
+                    
+                    <hr>
+                    
+                    <h6>What happens next:</h6>
+                    <ul class="list-unstyled">
+                        <li><i class="fas fa-check text-success"></i> Church is saved to database</li>
+                        <li><i class="fas fa-check text-success"></i> Available for participant assignment</li>
+                        <li><i class="fas fa-check text-success"></i> Redirected to churches list</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

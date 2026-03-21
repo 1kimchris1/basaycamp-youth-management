@@ -1,0 +1,125 @@
+{% extends 'base.html' %}
+
+{% block title %}Edit {{ finance.transaction_type.title }} - CRCCIMI YOUTH CAMP{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="row">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h2>
+                    <i class="fas fa-edit"></i> Edit {{ finance.transaction_type.title }}
+                </h2>
+                <a href="{% url 'finances' %}" class="btn btn-secondary">
+                    <i class="fas fa-arrow-left"></i> Back to Finances
+                </a>
+            </div>
+        </div>
+    </div>
+    
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card border-primary">
+                <div class="card-header {% if finance.transaction_type == 'income' %}bg-success{% else %}bg-danger{% endif %} text-white">
+                    <h5 class="mb-0">
+                        <i class="fas fa-{% if finance.transaction_type == 'income' %}plus-circle{% else %}minus-circle{% endif %}"></i>
+                        Edit {{ finance.transaction_type.title }} Record
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="alert alert-info">
+                        <i class="fas fa-info-circle"></i>
+                        <strong>Current Record:</strong> {{ finance.description }} - ₱{{ finance.amount|floatformat:2 }}
+                        <br>Created on: {{ finance.created_at|date:"M d, Y H:i" }}
+                        <br>Recorded by: {% if finance.recorded_by %}{{ finance.recorded_by.get_full_name|default:finance.recorded_by.username }}{% else %}System{% endif %}
+                    </div>
+                    
+                    <form method="post">
+                        {% csrf_token %}
+                        <div class="row">
+                            <div class="col-md-12">
+                                <div class="form-group mb-3">
+                                    <label for="{{ form.description.id_for_label }}" class="form-label">
+                                        {{ form.description.label }}
+                                    </label>
+                                    {{ form.description }}
+                                    {% if form.description.errors %}
+                                        <div class="text-danger small mt-1">
+                                            {{ form.description.errors }}
+                                        </div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group mb-3">
+                                    <label for="{{ form.amount.id_for_label }}" class="form-label">
+                                        {{ form.amount.label }}
+                                    </label>
+                                    {{ form.amount }}
+                                    {% if form.amount.errors %}
+                                        <div class="text-danger small mt-1">
+                                            {{ form.amount.errors }}
+                                        </div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            
+                            <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group mb-3">
+                                    <label for="{{ form.participant_name.id_for_label }}" class="form-label">
+                                        {{ form.participant_name.label }}
+                                    </label>
+                                    {{ form.participant_name }}
+                                    {% if form.participant_name.errors %}
+                                        <div class="text-danger small mt-1">
+                                            {{ form.participant_name.errors }}
+                                        </div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            
+                            <div class="col-md-6">
+                                <div class="form-group mb-3">
+                                    <label for="{{ form.recorded_by_name.id_for_label }}" class="form-label">
+                                        {{ form.recorded_by_name.label }}
+                                    </label>
+                                    {{ form.recorded_by_name }}
+                                    {% if form.recorded_by_name.errors %}
+                                        <div class="text-danger small mt-1">
+                                            {{ form.recorded_by_name.errors }}
+                                        </div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="d-flex justify-content-between">
+                            <a href="{% url 'finances' %}" class="btn btn-secondary">
+                                <i class="fas fa-times"></i> Cancel
+                            </a>
+                            <button type="submit" class="btn {% if finance.transaction_type == 'income' %}btn-success{% else %}btn-danger{% endif %}">
+                                <i class="fas fa-save"></i> Update {{ finance.transaction_type.title }}
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+// Auto-focus on description field for better UX
+document.addEventListener('DOMContentLoaded', function() {
+    const descriptionField = document.querySelector('#{{ form.description.id_for_label }}');
+    if (descriptionField) {
+        descriptionField.focus();
+        descriptionField.select();
+    }
+});
+</script>
+{% endblock %}

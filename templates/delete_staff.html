@@ -1,0 +1,131 @@
+{% extends 'base.html' %}
+
+{% block title %}Delete Staff - CRCCIMI YOUTH CAMP{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="row">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h2>
+                    <i class="fas fa-user-minus"></i> Delete Staff Member
+                </h2>
+                <a href="{% url 'staff_management' %}" class="btn btn-secondary">
+                    <i class="fas fa-arrow-left"></i> Back to Staff Management
+                </a>
+            </div>
+        </div>
+    </div>
+    
+    <div class="row">
+        <div class="col-md-8">
+            <div class="card border-danger">
+                <div class="card-header bg-danger text-white">
+                    <h5 class="mb-0">
+                        <i class="fas fa-exclamation-triangle"></i> Confirm Deletion
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="alert alert-danger">
+                        <i class="fas fa-exclamation-circle"></i>
+                        <strong>Warning:</strong> This action cannot be undone. The staff account will be permanently deleted from the system.
+                    </div>
+                    
+                    <div class="row mb-4">
+                        <div class="col-md-6">
+                            <h6>Staff Information:</h6>
+                            <table class="table table-sm">
+                                <tr>
+                                    <td><strong>Username:</strong></td>
+                                    <td>{{ staff_user.username }}</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Full Name:</strong></td>
+                                    <td>{{ staff_user.get_full_name|default:"Not specified" }}</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Email:</strong></td>
+                                    <td>{{ staff_user.email|default:"Not specified" }}</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Status:</strong></td>
+                                    <td>
+                                        {% if staff_user.is_active %}
+                                            <span class="badge bg-success">Active</span>
+                                        {% else %}
+                                            <span class="badge bg-secondary">Inactive</span>
+                                        {% endif %}
+                                    </td>
+                                </tr>
+                            </table>
+                        </div>
+                        
+                        <div class="col-md-6">
+                            <h6>Account Details:</h6>
+                            <ul class="list-unstyled">
+                                <li><strong>Date Joined:</strong> {{ staff_user.date_joined|date:"F d, Y" }}</li>
+                                <li><strong>Last Login:</strong> {{ staff_user.last_login|date:"F d, Y"|default:"Never" }}</li>
+                                <li><strong>Role:</strong> 
+                                    {% if staff_user.is_superuser %}
+                                        <span class="badge bg-danger">Administrator</span>
+                                    {% else %}
+                                        <span class="badge bg-info">Staff</span>
+                                    {% endif %}
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                    
+                    <form method="post">
+                        {% csrf_token %}
+                        
+                        <div class="alert alert-warning">
+                            <h6>Before you delete this staff member, consider:</h6>
+                            <ul>
+                                <li>All data associated with this user will remain in the system</li>
+                                <li>The user will lose access to the Youth Camp Management System</li>
+                                <li>This action cannot be undone</li>
+                            </ul>
+                        </div>
+                        
+                        <div class="d-flex justify-content-between">
+                            <a href="{% url 'staff_management' %}" class="btn btn-secondary">
+                                <i class="fas fa-times"></i> Cancel
+                            </a>
+                            <button type="submit" class="btn btn-danger">
+                                <i class="fas fa-trash"></i> Delete Staff Account
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-4">
+            <div class="card bg-light">
+                <div class="card-header">
+                    <h6 class="mb-0">
+                        <i class="fas fa-info-circle"></i> Deletion Information
+                    </h6>
+                </div>
+                <div class="card-body">
+                    <h6>What happens when you delete this staff member?</h6>
+                    <ul class="list-unstyled">
+                        <li><i class="fas fa-user-times text-danger"></i> User account is permanently deleted</li>
+                        <li><i class="fas fa-key text-danger"></i> Login credentials are removed</li>
+                        <li><i class="fas fa-shield-alt text-success"></i> System data remains intact</li>
+                        <li><i class="fas fa-database text-success"></i> No data loss for other records</li>
+                    </ul>
+                    
+                    <hr>
+                    
+                    <div class="alert alert-info">
+                        <i class="fas fa-lightbulb"></i>
+                        <strong>Alternative:</strong> If you just want to temporarily disable access, consider deactivating the account instead of deleting it.
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,330 @@
+{% extends 'base.html' %}
+
+{% block title %}Participants - CRCCIMI YOUTH CAMP{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="row">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h2>
+                    <i class="fas fa-users"></i> Participants Management
+                </h2>
+                <a href="{% url 'add_participant' %}" class="btn btn-primary">
+                    <i class="fas fa-plus"></i> Add New Participant
+                </a>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Color Team Filters -->
+    <div class="row mt-3">
+        <div class="col-12">
+            <div class="card filter-section">
+                <div class="card-header">
+                    <h6 class="mb-0">
+                        <i class="fas fa-filter"></i> Filter by Color Team
+                    </h6>
+                </div>
+                <div class="card-body">
+                    <div class="d-flex flex-wrap gap-2 align-items-center">
+                        <div class="btn-group" role="group">
+                            <a href="{% url 'participants' %}" class="btn color-filter-btn {% if not current_color_filter %}btn-primary{% else %}btn-outline-primary{% endif %}">
+                                <i class="fas fa-users"></i> All Participants
+                            </a>
+                        </div>
+                        
+                        {% if available_colors %}
+                            <div class="btn-group" role="group">
+                                {% for color in available_colors %}
+                                    <a href="{% url 'participants' %}?color={{ color|lower }}" 
+                                       class="btn color-filter-btn {% if current_color_filter == color|lower %}btn-primary{% else %}btn-outline-primary{% endif %}">
+                                        <i class="fas fa-palette"></i> {{ color|title }} Team
+                                    </a>
+                                {% endfor %}
+                            </div>
+                        {% endif %}
+                        
+                        {% if current_color_filter %}
+                            <div class="ms-3">
+                                <span class="filter-info">
+                                    <i class="fas fa-info-circle"></i> 
+                                    Showing {{ participants|length }} participant{% if participants|length != 1 %}s{% endif %} in {{ current_color_filter|title }} team
+                                </span>
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="card">
+        <div class="card-header">
+            <h5 class="mb-0">
+                {% if current_color_filter %}
+                    <i class="fas fa-users"></i> {{ current_color_filter|title }} Team Participants
+                {% else %}
+                    <i class="fas fa-users"></i> All Participants
+                {% endif %}
+            </h5>
+        </div>
+        <div class="card-body">
+            {% if participants %}
+                <div class="table-responsive">
+                    <table class="table table-striped table-hover">
+                        <thead class="table-dark">
+                            <tr>
+                                <th>Name</th>
+                                <th>Age</th>
+                                <th>Ministry</th>
+                                <th>Status</th>
+                                <th>Category</th>
+                                <th>Church</th>
+                                <th>Registration Fee</th>
+                                <th>Color</th>
+                                <th>Added Date</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for participant in participants %}
+                            <tr>
+                                <td><strong>{{ participant.name }}</strong></td>
+                                <td>{{ participant.age }}</td>
+                                <td>{{ participant.type_of_ministry|default:"-" }}</td>
+                                <td>
+                                    {% if participant.status == 'active' %}
+                                        <span class="badge bg-success">Active</span>
+                                    {% elif participant.status == 'inactive' %}
+                                        <span class="badge bg-secondary">Inactive</span>
+                                    {% elif participant.status == 'single' %}
+                                        <span class="badge bg-info">Single</span>
+                                    {% elif participant.status == 'married' %}
+                                        <span class="badge bg-warning">Married</span>
+                                    {% else %}
+                                        <span class="badge bg-secondary">Pending</span>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    {% if participant.category|lower == 'youth' %}
+                                        <span class="badge bg-info">Youth</span>
+                                    {% elif participant.category|lower == 'pastor' %}
+                                        <span class="badge bg-primary">Pastor</span>
+                                    {% else %}
+                                        <span class="badge bg-secondary">{{ participant.category|default:"-" }}</span>
+                                    {% endif %}
+                                </td>
+                                <td>{{ participant.church.name|default:"-" }}</td>
+                                <td><strong>&#8369;{{ participant.registration_fee|floatformat:2 }}</strong></td>
+                                <td>
+                                    <div class="d-flex align-items-center">
+                                        <div class="color-badge" style="{% if participant.color == 'white' %}background-color: {{ participant.color }}; color: #000;{% else %}background-color: {{ participant.color }}; color: #fff;{% endif %}">
+                                            {{ participant.color|title }}
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>{{ participant.created_at|date:"M d, Y" }}</td>
+                                <td>
+                                    <div class="btn-group" role="group">
+                                        <a href="{% url 'edit_participant' participant.id %}" class="btn btn-sm btn-primary" title="Edit Participant">
+                                            <i class="fas fa-edit"></i> Edit
+                                        </a>
+                                        <a href="{% url 'delete_participant' participant.id %}" class="btn btn-sm btn-danger" title="Delete Participant">
+                                            <i class="fas fa-trash"></i> Delete
+                                        </a>
+                                    </div>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            {% else %}
+                <div class="text-center py-5">
+                    <i class="fas fa-users fa-3x text-muted mb-3"></i>
+                    {% if current_color_filter %}
+                        <h5 class="text-muted">No Participants Found in {{ current_color_filter|title }} Team</h5>
+                        <p class="text-muted">There are no participants assigned to the {{ current_color_filter }} color team.</p>
+                        <a href="{% url 'participants' %}" class="btn btn-outline-primary">
+                            <i class="fas fa-arrow-left"></i> Show All Participants
+                        </a>
+                    {% else %}
+                        <h5 class="text-muted">No Participants Found</h5>
+                        <p class="text-muted">Get started by adding your first participant.</p>
+                        <a href="{% url 'add_participant' %}" class="btn btn-primary">
+                            <i class="fas fa-plus"></i> Add First Participant
+                        </a>
+                    {% endif %}
+                </div>
+            {% endif %}
+        </div>
+    </div>
+    
+    <div class="row mt-3">
+        <div class="col-12">
+            <div class="card bg-light">
+                <div class="card-body">
+                    <h6 class="card-title">
+                        <i class="fas fa-info-circle"></i> 
+                        {% if current_color_filter %}
+                            {{ current_color_filter|title }} Team Statistics
+                        {% else %}
+                            Participant Statistics
+                        {% endif %}
+                    </h6>
+                    <div class="row">
+                        <div class="col-md-3">
+                            <ul class="list-unstyled mb-0">
+                                <li><strong>Total Participants:</strong> {{ participants|length }}</li>
+                                <li><strong>Youth:</strong> 
+                                    {% with youth_count=0 %}
+                                        {% for participant in participants %}
+                                            {% if participant.category|lower == 'youth' %}{% widthratio youth_count|add:1 1 youth_count %}{% endif %}
+                                        {% endfor %}
+                                        {{ youth_count }}
+                                    {% endwith %}
+                                </li>
+                            </ul>
+                        </div>
+                        <div class="col-md-3">
+                            <ul class="list-unstyled mb-0">
+                                <li><strong>Pastors:</strong> 
+                                    {% with pastor_count=0 %}
+                                        {% for participant in participants %}
+                                            {% if participant.category|lower == 'pastor' %}{% widthratio pastor_count|add:1 1 pastor_count %}{% endif %}
+                                        {% endfor %}
+                                        {{ pastor_count }}
+                                    {% endwith %}
+                                </li>
+                                <li><strong>Active:</strong> 
+                                    {% with active_count=0 %}
+                                        {% for participant in participants %}
+                                            {% if participant.status == 'active' %}{% widthratio active_count|add:1 1 active_count %}{% endif %}
+                                        {% endfor %}
+                                        {{ active_count }}
+                                    {% endwith %}
+                                </li>
+                            </ul>
+                        </div>
+                        <div class="col-md-3">
+                            <ul class="list-unstyled mb-0">
+                                <li><strong>Total Fees Collected:</strong> &#8369;
+                                    {% with total_fees=0 %}
+                                        {% for participant in participants %}
+                                            {% widthratio total_fees|add:participant.registration_fee 1 total_fees %}
+                                        {% endfor %}
+                                        {{ total_fees|floatformat:2 }}
+                                    {% endwith %}
+                                </li>
+                                {% if current_color_filter %}
+                                <li><strong>Team Color:</strong> 
+                                    <span class="team-badge" style="background-color: {{ current_color_filter }}; color: white;">
+                                        {{ current_color_filter|title }}
+                                    </span>
+                                </li>
+                                {% endif %}
+                            </ul>
+                        </div>
+                        <div class="col-md-3">
+                            {% if current_color_filter %}
+                                <ul class="list-unstyled mb-0">
+                                    <li><strong>Team Percentage:</strong> 
+                                        {% with total_all_participants=0 %}
+                                            {% for all_participant in all_participants %}
+                                                {% widthratio total_all_participants|add:1 1 total_all_participants %}
+                                            {% endfor %}
+                                            {% if total_all_participants > 0 %}
+                                                {% widthratio participants|length 100 total_all_participants %}%
+                                            {% else %}
+                                                0%
+                                            {% endif %}
+                                        {% endwith %}
+                                    </li>
+                                    <li><strong>Average Age:</strong> 
+                                        {% with total_age=0 %}
+                                            {% for participant in participants %}
+                                                {% widthratio total_age|add:participant.age 1 total_age %}
+                                            {% endfor %}
+                                            {% if participants %}
+                                                {% widthratio total_age participants|length 1 %} years
+                                            {% else %}
+                                                -
+                                            {% endif %}
+                                        {% endwith %}
+                                    </li>
+                                {% else %}
+                                <ul class="list-unstyled mb-0">
+                                    <li><strong>Average Age:</strong> 
+                                        {% with total_age=0 %}
+                                            {% for participant in participants %}
+                                                {% widthratio total_age|add:participant.age 1 total_age %}
+                                            {% endfor %}
+                                            {% if participants %}
+                                                {% widthratio total_age participants|length 1 %} years
+                                            {% else %}
+                                                -
+                                            {% endif %}
+                                        {% endwith %}
+                                    </li>
+                                </ul>
+                                {% endif %}
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<style>
+.color-badge {
+    padding: 4px 8px;
+    border-radius: 12px;
+    font-weight: bold;
+    font-size: 12px;
+    margin-right: 8px;
+    display: inline-block;
+    min-width: 60px;
+    text-align: center;
+}
+
+.color-filter-btn {
+    transition: all 0.3s ease;
+}
+
+.color-filter-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+}
+
+.filter-section {
+    background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+    border: 1px solid #dee2e6;
+}
+
+.filter-section .card-header {
+    background: linear-gradient(135deg, #007bff 0%, #0056b3 100%);
+    color: white;
+    border-bottom: none;
+}
+
+.filter-info {
+    background: rgba(0, 123, 255, 0.1);
+    border: 1px solid rgba(0, 123, 255, 0.3);
+    border-radius: 8px;
+    padding: 8px 12px;
+    font-size: 14px;
+}
+
+.team-badge {
+    display: inline-block;
+    padding: 6px 12px;
+    border-radius: 20px;
+    font-weight: 600;
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+</style>
+{% endblock %}

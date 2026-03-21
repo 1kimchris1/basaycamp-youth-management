@@ -1,0 +1,94 @@
+{% extends 'base.html' %}
+
+{% block title %}Churches - CRCCIMI YOUTH CAMP{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="row">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h2>
+                    <i class="fas fa-church"></i> Churches Management
+                </h2>
+                <a href="{% url 'add_church' %}" class="btn btn-primary">
+                    <i class="fas fa-plus"></i> Add New Church
+                </a>
+            </div>
+        </div>
+    </div>
+    
+    <div class="card">
+        <div class="card-header">
+            <h5 class="mb-0">All Churches</h5>
+        </div>
+        <div class="card-body">
+            {% if churches %}
+                <div class="table-responsive">
+                    <table class="table table-striped table-hover">
+                        <thead class="table-dark">
+                            <tr>
+                                <th>Church Name</th>
+                                <th>Host Pastor</th>
+                                <th>Added Date</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for church in churches %}
+                            <tr>
+                                <td><strong>{{ church.name }}</strong></td>
+                                <td>{{ church.host_pastor }}</td>
+                                <td>{{ church.created_at|date:"M d, Y" }}</td>
+                                <td>
+                                    <a href="{% url 'church_members' church.id %}" class="btn btn-sm btn-primary">
+                                        <i class="fas fa-users"></i> View Members
+                                    </a>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            {% else %}
+                <div class="text-center py-5">
+                    <i class="fas fa-church fa-3x text-muted mb-3"></i>
+                    <h5 class="text-muted">No Churches Found</h5>
+                    <p class="text-muted">Get started by adding your first church.</p>
+                    <a href="{% url 'add_church' %}" class="btn btn-primary">
+                        <i class="fas fa-plus"></i> Add First Church
+                    </a>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+    
+    <div class="row mt-3">
+        <div class="col-12">
+            <div class="card bg-light">
+                <div class="card-body">
+                    <h6 class="card-title">
+                        <i class="fas fa-info-circle"></i> Church Statistics
+                    </h6>
+                    <div class="row">
+                        <div class="col-md-4">
+                            <ul class="list-unstyled mb-0">
+                                <li><strong>Total Churches:</strong> {{ churches|length }}</li>
+                            </ul>
+                        </div>
+                        <div class="col-md-4">
+                            <ul class="list-unstyled mb-0">
+                                <li><strong>Leading Church:</strong> Grace Community Church</li>
+                            </ul>
+                        </div>
+                        <div class="col-md-4">
+                            <ul class="list-unstyled mb-0">
+                                <li><strong>Active Pastors:</strong> {{ churches|length }}</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
